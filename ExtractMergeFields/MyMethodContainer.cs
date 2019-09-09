@@ -19,6 +19,7 @@ namespace ExtractMergeFields
         }
         public void SaveZipFile(string openPath)
         {
+            // saves a document into a zip collection that exposes its XML
             using (WordprocessingDocument doc = WordprocessingDocument.Open(openPath, true))
             {
                 string savePath = $"{_basePath}Petition.zip";
@@ -26,8 +27,9 @@ namespace ExtractMergeFields
             }
         }
 
-        public void ExchangeTextValue(string filePath, string incorrectValue = "Harold", string correctValue = "Harry")
+        public void ExchangeTextValue(string filePath, string incorrectValue = "Harry", string correctValue = "Harold")
         {
+            // Updates an incorrect value of a complex mergefield with a correct value
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
             {
                 foreach (Run run in doc.MainDocumentPart.Document.Descendants<Run>())
@@ -43,6 +45,7 @@ namespace ExtractMergeFields
 
         public void MailMerge(string filePath, string incorrectValue = "Harold", string correctValue = "Harry")
         {
+            // not currently usable
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
             {
                 const string FieldDelimeter = " MERGEFIELD ";
@@ -74,6 +77,7 @@ namespace ExtractMergeFields
 
         public void ChangeSingleMergefield(string filePath, string mergefieldName = "DEBTOR__First_name_excl_middle", string correctValue = "Harry")
         {
+            // Updates a merge field's value when we know the field name but not the current value
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
             {
                 string completeMergeFieldName = $" MERGEFIELD {mergefieldName} ";
@@ -94,35 +98,58 @@ namespace ExtractMergeFields
 
         public void ChangeEmptyMergefield(string filePath, string mergefieldName = "DEBTOR__Middle_name", string correctValue = "Harry")
         {
+            // should update the field's value when it is currently empty, while preserving the mergefield
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
             {
                 string completeMergeFieldName = $" MERGEFIELD {mergefieldName} ";
 
-                foreach (FieldCode field in doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Contains(completeMergeFieldName)))
+                foreach (FieldCode field in doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Equals(completeMergeFieldName)))
                 {
                     var paragraph = field.Ancestors<Paragraph>().FirstOrDefault();
-                    var clone = paragraph.Descendants<Run>().FirstOrDefault().Clone();
-                    paragraph.AppendChild((Run)clone);
-                    var clone2 = paragraph.Descendants<Run>().FirstOrDefault().Clone();
-                    paragraph.AppendChild((Run)clone2);
+                    Run mergefieldRunElement = (Run)field.Parent;
+                    Run precedingElement = (Run)mergefieldRunElement.PreviousSibling();
+                    var clone = precedingElement.Clone();
+                    var clone2 = precedingElement.Clone();
 
-                    var changeFldCharType = paragraph.Descendants<Run>().ToList()[2];
-                    // changeFldCharType.LastChild.FieldCharType = "separate";
-                    var thirdRunChildren = changeFldCharType.ChildElements.ToList();
-                    var fldTypeElement = changeFldCharType.Descendants().Last();
-                    // fldTypeElement.FieldCharType = "separate";
+                    paragraph.InsertAt((Run)clone, paragraph.ChildElements.Count() - 1);
+                    paragraph.InsertAt((Run)clone2, paragraph.ChildElements.Count() - 1);
 
-                    var runToBeChanged = paragraph.Descendants<Run>().ToList()[3];
+                    // This changes the middle element's field type to "separate," a necessary component of the mergefield structure
+                    var runs = paragraph.Descendants<Run>().ToList();
+                    var separateRun = runs[2];
+                    var fldChar = separateRun.Descendants<FieldChar>().FirstOrDefault();
+                    fldChar.FieldCharType.Value = FieldCharValues.Separate;
+                    fldChar.FieldLock = null;
+
+                    // This updates the second to last element and inserts the desired value
+                    var runToBeChanged = runs[3];
                     runToBeChanged.RsidRunProperties = "007F440F";
                     runToBeChanged.RsidRunAddition = "005A020C";
+                    runToBeChanged.RemoveChild(runToBeChanged.ChildElements[1]);
                     runToBeChanged.AppendChild(new Text(correctValue));
                 }
-                // doc.MainDocumentPart.Document.Save();
+                doc.MainDocumentPart.Document.Save();
             }
+        }
+
+        public bool DiscoverIf(Run run)
+        {
+            bool ifExists = false;
+            var siblings = run.Parent.ChildElements.ToList();
+            foreach (var s in siblings)
+            {
+                if (s.InnerText == " IF ")
+                {
+                    ifExists = true;
+                    break;
+                }
+            }
+            return ifExists;
         }
 
         public void ReadLeapForm(string myFilePath)
         {
+            // Use spire to get a collection of all mergefield names
             Spire.Doc.Document document = new Spire.Doc.Document();
             document.LoadFromFile(myFilePath);
 
@@ -143,6 +170,7 @@ namespace ExtractMergeFields
 
         public void ReadSmokeballForm()
         {
+            // Use spire to get a collection of fields in the smokeball document
             Spire.Doc.Document document = new Spire.Doc.Document();
             document.LoadFromFile($"{_basePath}SmokeballBankruptcyPetition.docx");
 

@@ -11,7 +11,7 @@ namespace ExtractMergeFields
 {
     public static class OtherHelpers
     {
-        private static Run CreateSimpleTextRun(string text)
+        public static Run CreateSimpleTextRun(string text)
         {
             Run returnVar = new Run();
             RunProperties runProp = new RunProperties();
@@ -21,7 +21,7 @@ namespace ExtractMergeFields
             return returnVar;
         }
 
-        private static void InsertMergeFieldText(OpenXmlElement field, string replacementText)
+        public static void InsertMergeFieldText(OpenXmlElement field, string replacementText)
         {
             var sf = field as SimpleField;
             if (sf != null)
@@ -48,7 +48,7 @@ namespace ExtractMergeFields
             }
         }
 
-        private static IList<Run> GetAssociatedRuns(FieldCode fieldCode)
+        public static IList<Run> GetAssociatedRuns(FieldCode fieldCode)
         {
             Run rFieldCode = (Run)fieldCode.Parent;
             Run rBegin = rFieldCode.PreviousSibling<Run>();

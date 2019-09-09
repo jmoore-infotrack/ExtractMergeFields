@@ -70,6 +70,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExperimentXML.cs" />
+    <Compile Include="MyMethodContainer.cs" />
+    <Compile Include="OpenXmlWordHelper.cs" />
+    <Compile Include="OtherHelpers.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

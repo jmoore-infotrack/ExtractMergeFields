@@ -15,6 +15,7 @@ namespace ExtractMergeFields
     {
         private static readonly string basePath = "../../Docs/";
         private static readonly string mainFilePath = $"{basePath}LeapBankruptcyPetition.docx";
+        private static readonly string cloneFilePath = $"{basePath}BankruptcyPetitionClone.docx";
         static void Main()
         {
             MyMethodContainer methodContainer = new MyMethodContainer(basePath);
@@ -26,7 +27,20 @@ namespace ExtractMergeFields
             // experiment.WriteToWordDoc($"{basePath}ExperimentDoc.docx", "Hello world");
             // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
 
+            // methodContainer.ExchangeTextValue(mainFilePath);
+            // methodContainer.ChangeSingleMergefield(mainFilePath, "Harry", "Harold");
             methodContainer.ChangeEmptyMergefield(mainFilePath);
+
+            //using(WordprocessingDocument doc = WordprocessingDocument.Open(cloneFilePath, true))
+            //{
+            //    var fields = OpenXmlWordHelper.GetMergeFields(doc).ToList();
+            //    // var firstNameField = OpenXmlWordHelper.WhereNameIs(fields, " MERGEFIELD DEBTOR__First_name_excl_middle ").FirstOrDefault();
+            //    // OpenXmlWordHelper.ReplaceWithText(fields[2], "Brandon");
+            //    // var firstNameFields = new List<FieldCode>() { fields[2] };
+            //    // OpenXmlWordHelper.ReplaceWithText(firstNameFields, "Nothing");
+
+            //    var runs = OtherHelpers.GetAssociatedRuns(fields[2]);
+            //}
 
             Console.ReadLine();
         }

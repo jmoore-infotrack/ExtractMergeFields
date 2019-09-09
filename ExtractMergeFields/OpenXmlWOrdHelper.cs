@@ -13,31 +13,31 @@ namespace ExtractMergeFields
     {
     // this solution is found here https://github.com/frankfajardo/OpenXmlWordHelper/blob/master/OpenXmlWordHelpers.cs
 
-    /// <summary>
-    /// Gets merge fields contained in a document, including the header and footer sections. 
-    /// </summary>
-    /// <param name="mergeFieldName">Optional name for the merge fields to look for.</param>
-    /// <returns>If a merge field name is specified, only merge fields with that name are returned. Otherwise, it returns all merge fields contained in the document.</returns>
-    public static IEnumerable<FieldCode> GetMergeFields(this WordprocessingDocument doc, string mergeFieldName = null)
-        {
-            if (doc == null)
-                return null;
-
-            List<FieldCode> mergeFields = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().ToList();
-            foreach (var header in doc.MainDocumentPart.HeaderParts)
+        /// <summary>
+        /// Gets merge fields contained in a document, including the header and footer sections. 
+        /// </summary>
+        /// <param name="mergeFieldName">Optional name for the merge fields to look for.</param>
+        /// <returns>If a merge field name is specified, only merge fields with that name are returned. Otherwise, it returns all merge fields contained in the document.</returns>
+        public static IEnumerable<FieldCode> GetMergeFields(this WordprocessingDocument doc, string mergeFieldName = null)
             {
-                mergeFields.AddRange(header.RootElement.Descendants<FieldCode>());
-            }
-            foreach (var footer in doc.MainDocumentPart.FooterParts)
-            {
-                mergeFields.AddRange(footer.RootElement.Descendants<FieldCode>());
-            }
+                if (doc == null)
+                    return null;
 
-            if (!string.IsNullOrWhiteSpace(mergeFieldName) && mergeFields != null && mergeFields.Count() > 0)
-                return mergeFields.WhereNameIs(mergeFieldName);
+                List<FieldCode> mergeFields = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().ToList();
+                foreach (var header in doc.MainDocumentPart.HeaderParts)
+                {
+                    mergeFields.AddRange(header.RootElement.Descendants<FieldCode>());
+                }
+                foreach (var footer in doc.MainDocumentPart.FooterParts)
+                {
+                    mergeFields.AddRange(footer.RootElement.Descendants<FieldCode>());
+                }
 
-            return mergeFields;
-        }
+                if (!string.IsNullOrWhiteSpace(mergeFieldName) && mergeFields != null && mergeFields.Count() > 0)
+                    return mergeFields.WhereNameIs(mergeFieldName);
+
+                return mergeFields;
+            }
 
         /// <summary>
         /// Gets merge fields contained in the given element.
