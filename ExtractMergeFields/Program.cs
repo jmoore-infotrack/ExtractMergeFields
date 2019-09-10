@@ -18,6 +18,7 @@ namespace ExtractMergeFields
         private static readonly string cloneFilePath = $"{basePath}BankruptcyPetitionClone.docx";
         static void Main()
         {
+            Reader reader = new Reader(basePath);
             MyMethodContainer methodContainer = new MyMethodContainer(basePath);
             Person person = new Person { FirstName = "Robert", MiddleName = "Harold", LastName = "Williamson" };
             string[] fieldNames = new string[3] { "DEBTOR__First_name_excl_middle", "DEBTOR__Middle_name", "DEBTOR__People_Last_Name" };
@@ -26,23 +27,15 @@ namespace ExtractMergeFields
             // ExperimentXML experiment = new ExperimentXML();
             // experiment.WriteToWordDoc($"{basePath}ExperimentDoc.docx", "Hello world");
             // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
+            // reader.FindAllIfParagraphs(mainFilePath);
 
-            // methodContainer.ExchangeTextValue(mainFilePath);
-            // methodContainer.ChangeSingleMergefield(mainFilePath, "Harry", "Harold");
-            methodContainer.ChangeEmptyMergefield(mainFilePath);
-            // methodContainer.FindAllIfParagraphs(mainFilePath);
+            // methodContainer.ExchangeTextValue(mainFilePath, "6789", "0000");
+            // methodContainer.ChangeSingleMergefield(mainFilePath, "DEBTOR__First_name_excl_middle", "Robert");
+            // methodContainer.ChangeEmptyMergefield(mainFilePath, "BANKRUPTCY_DE__Case_number", "12345");
+            // methodContainer.SaveZipFile($"{basePath}BankruptcyPetitionClone2.docx");
+            methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
 
-            //using(WordprocessingDocument doc = WordprocessingDocument.Open(cloneFilePath, true))
-            //{
-            //    var fields = OpenXmlWordHelper.GetMergeFields(doc).ToList();
-            //    // var firstNameField = OpenXmlWordHelper.WhereNameIs(fields, " MERGEFIELD DEBTOR__First_name_excl_middle ").FirstOrDefault();
-            //    // OpenXmlWordHelper.ReplaceWithText(fields[2], "Brandon");
-            //    // var firstNameFields = new List<FieldCode>() { fields[2] };
-            //    // OpenXmlWordHelper.ReplaceWithText(firstNameFields, "Nothing");
-
-            //    var runs = OtherHelpers.GetAssociatedRuns(fields[2]);
-            //}
-
+            Console.WriteLine("The program is complete.");
             Console.ReadLine();
         }
     }
