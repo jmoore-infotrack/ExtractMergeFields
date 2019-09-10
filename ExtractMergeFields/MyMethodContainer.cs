@@ -96,7 +96,7 @@ namespace ExtractMergeFields
             }
         }
 
-        public void ChangeEmptyMergefield(string filePath, string mergefieldName = "DEBTOR__Middle_name", string correctValue = "Harry")
+        public void ChangeEmptyMergefield(string filePath, string mergefieldName = "BANKRUPTCY_DE__Case_number", string correctValue = "12345")
         {
             // should update the field's value when it is currently empty, while preserving the mergefield
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
@@ -145,6 +145,21 @@ namespace ExtractMergeFields
                 }
             }
             return ifExists;
+        }
+
+        public List<Paragraph> FindAllIfParagraphs(string filePath)
+        {
+            List<Paragraph> paragraphs = new List<Paragraph>();
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            {
+                foreach (FieldCode field in doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Contains(" IF ")))
+                {
+                    var paragraph = field.Ancestors<Paragraph>().FirstOrDefault();
+                    Console.WriteLine(paragraph.Count());
+                    paragraphs.Add(paragraph);
+                }
+            }
+            return paragraphs;
         }
 
         public void ReadLeapForm(string myFilePath)

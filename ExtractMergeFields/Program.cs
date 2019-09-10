@@ -30,6 +30,7 @@ namespace ExtractMergeFields
             // methodContainer.ExchangeTextValue(mainFilePath);
             // methodContainer.ChangeSingleMergefield(mainFilePath, "Harry", "Harold");
             methodContainer.ChangeEmptyMergefield(mainFilePath);
+            // methodContainer.FindAllIfParagraphs(mainFilePath);
 
             //using(WordprocessingDocument doc = WordprocessingDocument.Open(cloneFilePath, true))
             //{
