@@ -18,15 +18,6 @@ namespace ExtractMergeFields
         {
             _basePath = basePath;
         }
-        public void SaveZipFile(string openPath)
-        {
-            // saves a document into a zip collection that exposes its XML
-            using (WordprocessingDocument doc = WordprocessingDocument.Open(openPath, true))
-            {
-                string savePath = $"{_basePath}/Checkbox/Petition.zip";
-                doc.SaveAs(savePath);
-            }
-        }
 
         public void ExchangeTextValue(string filePath, string incorrectValue = "Harry", string correctValue = "Harold")
         {
@@ -95,15 +86,6 @@ namespace ExtractMergeFields
             }
         }
 
-        public void ExecuteTextChange(FieldCode field, Paragraph paragraph, string correctValue)
-        {
-            var runToBeChanged = paragraph.Descendants<Run>().ToList()[3];
-            Console.WriteLine("Before: " + runToBeChanged.InnerText);
-            var textToBeChanged = runToBeChanged.Descendants<Text>().FirstOrDefault();
-            textToBeChanged.Text = correctValue;
-            Console.WriteLine("After: " + runToBeChanged.InnerText);
-        }
-
         public void ChangeEmptyMergefield(string filePath, string mergefieldName = "DEBTOR__Middle_name", string correctValue = "Leonard")
         {
             // should update the field's value when it is currently empty, while preserving the mergefield
@@ -122,6 +104,7 @@ namespace ExtractMergeFields
                     {
                         continue;
                     }
+                    // An empty paragraph can have 3 or 4 ChildElements, depending on whether there is a properties element
                     if(paragraph.Count() == 3 || paragraph.Count() == 4)
                     {
                         var clone = precedingElement.Clone();
@@ -154,6 +137,57 @@ namespace ExtractMergeFields
             }
         }
 
+        public void CheckCheckbox(string filePath, string locatorText)
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            {
+                var chapterSevenTextNode = doc.MainDocumentPart.RootElement.Descendants<Text>().Where(x => x.Text.Equals(locatorText)).FirstOrDefault();
+                var paragraph = chapterSevenTextNode.Parent.Parent;
+
+                // First we set the checked value to 1
+                SdtRun checkerElement = paragraph.Descendants<SdtRun>().FirstOrDefault();
+                SdtProperties properties = checkerElement.Descendants<SdtProperties>().FirstOrDefault();
+                SdtContentCheckBox checkbox = (SdtContentCheckBox)properties.ChildElements[2];
+                checkbox.Checked.Val = OnOffValues.One;
+
+                // Next we change the symbol shown
+                var content = properties.NextSibling().NextSibling();
+                SymbolChar symbol = content.Descendants<SymbolChar>().FirstOrDefault();
+                symbol.Char = "F052";
+                symbol.Font = "Wingdings 2";
+            }
+        }
+
+        public void UncheckCheckbox(string filePath, string locatorText)
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            {
+                var textNode = doc.MainDocumentPart.RootElement.Descendants<Text>().Where(x => x.Text.Equals(locatorText)).FirstOrDefault();
+                var paragraph = textNode.Parent.Parent;
+
+                // First we set the checked value to 0
+                SdtRun checkerElement = paragraph.Descendants<SdtRun>().FirstOrDefault();
+                SdtProperties properties = checkerElement.Descendants<SdtProperties>().FirstOrDefault();
+                SdtContentCheckBox checkbox = (SdtContentCheckBox)properties.ChildElements[2];
+                checkbox.Checked.Val = OnOffValues.Zero;
+
+                // Next we change the symbol shown
+                var content = properties.NextSibling().NextSibling();
+                SymbolChar symbol = content.Descendants<SymbolChar>().FirstOrDefault();
+                symbol.Char = "F072";
+                symbol.Font = "Wingdings";
+            }
+        }
+
+        public void ExecuteTextChange(FieldCode field, Paragraph paragraph, string correctValue)
+        {
+            var runToBeChanged = paragraph.Descendants<Run>().ToList()[3];
+            Console.WriteLine("Before: " + runToBeChanged.InnerText);
+            var textToBeChanged = runToBeChanged.Descendants<Text>().FirstOrDefault();
+            textToBeChanged.Text = correctValue;
+            Console.WriteLine("After: " + runToBeChanged.InnerText);
+        }
+
         public bool DiscoverIf(Run run)
         {
             bool ifExists = false;
@@ -169,22 +203,13 @@ namespace ExtractMergeFields
             return ifExists;
         }
 
-        public void CheckCheckbox(string filePath, string locatorText)
+        public void SaveZipFile(string openPath)
         {
-            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            // saves a document into a zip collection that exposes its XML
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(openPath, true))
             {
-                var chapterSevenTextNode = doc.MainDocumentPart.RootElement.Descendants<Text>().Where(x => x.Text.Equals(locatorText)).FirstOrDefault();
-                var paragraph = chapterSevenTextNode.Parent.Parent;
-
-                SdtRun checkerElement = paragraph.Descendants<SdtRun>().FirstOrDefault();
-                SdtProperties properties = checkerElement.Descendants<SdtProperties>().FirstOrDefault();
-                SdtContentCheckBox checkbox = (SdtContentCheckBox)properties.ChildElements[2];
-                checkbox.Checked.Val = OnOffValues.One;
-
-                var content = properties.NextSibling().NextSibling();
-                SymbolChar symbol = content.Descendants<SymbolChar>().FirstOrDefault();
-                symbol.Char = "F052";
-                symbol.Font = "Wingdings 2";
+                string savePath = $"{_basePath}/Checkbox/Petition.zip";
+                doc.SaveAs(savePath);
             }
         }
     }

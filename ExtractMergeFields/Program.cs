@@ -27,6 +27,7 @@ namespace ExtractMergeFields
             // ExperimentXML experiment = new ExperimentXML();
             // experiment.WriteToWordDoc($"{basePath}ExperimentDoc.docx", "Hello world");
             // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
+            
             // reader.FindAllIfParagraphs(mainFilePath);
 
             // methodContainer.ExchangeTextValue(mainFilePath, "6789", "0000");
@@ -34,6 +35,7 @@ namespace ExtractMergeFields
             // methodContainer.ChangeEmptyMergefield(mainFilePath, "BANKRUPTCY_DE__Case_number", "12345");
             // methodContainer.SaveZipFile($"{basePath}BankruptcyPetitionClone2.docx");
             methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
+            // methodContainer.UncheckCheckbox(mainFilePath, "Chapter 7");
 
             Console.WriteLine("The program is complete.");
             Console.ReadLine();
