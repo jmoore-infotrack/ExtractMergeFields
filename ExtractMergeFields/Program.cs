@@ -16,7 +16,7 @@ namespace ExtractMergeFields
         private static readonly string basePath = "../../Docs/";
         private static readonly string mainFilePath = $"{basePath}LeapBankruptcyPetition.docx";
         private static readonly string cloneFilePath = $"{basePath}BankruptcyPetitionClone.docx";
-        private static string fileName = "WellingtonFarnsworthJointPetition";
+        private static string fileName = "LeapBankruptcyPetition";
         static void Main()
         {
             Reader reader = new Reader(basePath);
@@ -30,17 +30,18 @@ namespace ExtractMergeFields
             // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
 
             // reader.FindAllIfParagraphs(mainFilePath);
-            var fields = reader.ReadLeapForm($"{basePath}{fileName}.docx");
-            DictionaryBuilder builder = new DictionaryBuilder(fields);
-            var values = builder.GetMergefieldDictionary();
+            //var fields = reader.ReadLeapForm($"{basePath}{fileName}.docx");
+            //DictionaryBuilder builder = new DictionaryBuilder(fields);
+            //var values = builder.GetMergefieldDictionary();
             // reader.GetFilerType(fields);
 
+            methodContainer.CleanMergefield(mainFilePath);
             // methodContainer.ExchangeTextValue(mainFilePath, "6789", "0000");
-            // methodContainer.ChangeSingleMergefield(mainFilePath, "DEBTOR__First_name_excl_middle", "Robert");
+            // methodContainer.ChangeSingleMergefield(mainFilePath, "DEBTOR2__Middle_name", "Robert");
             // methodContainer.ChangeEmptyMergefield(mainFilePath, "BANKRUPTCY_DE__Case_number", "12345");
-            // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
             // methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
             // methodContainer.UncheckCheckbox(mainFilePath, "Chapter 7");
+            // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
 
             Console.WriteLine("The program is complete.");
             Console.ReadLine();

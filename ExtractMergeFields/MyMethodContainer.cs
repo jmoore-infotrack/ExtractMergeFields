@@ -212,5 +212,62 @@ namespace ExtractMergeFields
                 doc.SaveAs(savePath);
             }
         }
+
+        public void CleanMergefield(string filePath, string mergefieldName = "DEBTOR2__Middle_name", string correctValue = "")
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            {
+                string completeMergeFieldName = $"MERGEFIELD {mergefieldName} ";
+
+                var fieldsWithMergefieldName = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Contains(mergefieldName));
+                foreach (FieldCode field in fieldsWithMergefieldName)
+                {
+                    var paragraph = field.Ancestors<Paragraph>().FirstOrDefault();
+                    if (paragraph.Count() <= 6) return;
+                    var firstBeginDone = false;
+                    var firstMergefieldDone = false;
+                    var firstSeparateDone = false;
+                    var firstTextDone = false;
+                    var firstEndDone = false;
+
+                    var runs = paragraph.Descendants<Run>().ToList();
+                    foreach (Run run in runs)
+                    {
+                        if(run.Descendants<FieldChar>().Any(x => x.FieldCharType == FieldCharValues.Begin) && firstBeginDone != true)
+                        {
+                            firstBeginDone = true;
+                            continue;
+                        }
+                        if (run.Descendants<FieldChar>().Any(x => x.FieldCharType == FieldCharValues.Separate) && firstSeparateDone != true)
+                        {
+                            firstSeparateDone = true;
+                            continue;
+                        }
+                        if (run.Descendants<FieldChar>().Any(x => x.FieldCharType == FieldCharValues.End) && firstEndDone != true)
+                        {
+                            firstEndDone = true;
+                            continue;
+                        }
+                        if (run.Descendants<FieldCode>().Any(x => x.Text.Contains(mergefieldName)) && firstMergefieldDone != true)
+                        {
+                            firstMergefieldDone = true;
+                            continue;
+                        }
+                        if (run.RsidRunProperties != null && run.RsidRunAddition != null && firstTextDone != true)
+                        {
+                            FieldCode fieldcode = (FieldCode)run.ChildElements[1];
+                            fieldcode.Text = "value";
+                            firstTextDone = true;
+                            continue;
+                        }
+                        run.Remove();
+                    }
+                    Run mergeFieldElement = (Run)paragraph.ChildElements[4].Clone();
+                    paragraph.InsertAt(mergeFieldElement, 1);
+                    paragraph.ChildElements[5].Remove();
+                }
+                doc.Save();
+            }
+        }
     }
 }
