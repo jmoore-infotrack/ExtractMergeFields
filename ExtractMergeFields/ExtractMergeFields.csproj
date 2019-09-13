@@ -69,7 +69,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DictionaryBuilder.cs" />
     <Compile Include="ExperimentXML.cs" />
+    <Compile Include="MapperHelper.cs" />
     <Compile Include="MyMethodContainer.cs" />
     <Compile Include="OpenXmlWordHelper.cs" />
     <Compile Include="OtherHelpers.cs" />

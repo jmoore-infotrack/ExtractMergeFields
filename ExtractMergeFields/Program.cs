@@ -16,6 +16,7 @@ namespace ExtractMergeFields
         private static readonly string basePath = "../../Docs/";
         private static readonly string mainFilePath = $"{basePath}LeapBankruptcyPetition.docx";
         private static readonly string cloneFilePath = $"{basePath}BankruptcyPetitionClone.docx";
+        private static string fileName = "WellingtonFarnsworthJointPetition";
         static void Main()
         {
             Reader reader = new Reader(basePath);
@@ -27,14 +28,18 @@ namespace ExtractMergeFields
             // ExperimentXML experiment = new ExperimentXML();
             // experiment.WriteToWordDoc($"{basePath}ExperimentDoc.docx", "Hello world");
             // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
-            
+
             // reader.FindAllIfParagraphs(mainFilePath);
+            var fields = reader.ReadLeapForm($"{basePath}{fileName}.docx");
+            DictionaryBuilder builder = new DictionaryBuilder(fields);
+            var values = builder.GetMergefieldDictionary();
+            // reader.GetFilerType(fields);
 
             // methodContainer.ExchangeTextValue(mainFilePath, "6789", "0000");
             // methodContainer.ChangeSingleMergefield(mainFilePath, "DEBTOR__First_name_excl_middle", "Robert");
             // methodContainer.ChangeEmptyMergefield(mainFilePath, "BANKRUPTCY_DE__Case_number", "12345");
-            // methodContainer.SaveZipFile($"{basePath}BankruptcyPetitionClone2.docx");
-            methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
+            // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
+            // methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
             // methodContainer.UncheckCheckbox(mainFilePath, "Chapter 7");
 
             Console.WriteLine("The program is complete.");

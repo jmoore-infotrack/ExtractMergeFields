@@ -31,7 +31,7 @@ namespace ExtractMergeFields
             return paragraphs;
         }
 
-        public void ReadLeapForm(string myFilePath)
+        public IEnumerable<Spire.Doc.Fields.Field> ReadLeapForm(string myFilePath)
         {
             // Use spire to get a collection of all mergefield names
             Spire.Doc.Document document = new Spire.Doc.Document();
@@ -46,10 +46,11 @@ namespace ExtractMergeFields
 
             var mergeFieldNames = document.MailMerge.GetMergeFieldNames().ToList();
 
-            foreach (var f in mergeFields)
-            {
-                Console.Write($"{f.Code.Substring(12, f.Code.Length - 12)}, {f.Text}\n");
-            }
+            //foreach (var f in mergeFields)
+            //{
+            //    Console.Write($"{f.Code.Substring(12, f.Code.Length - 12)}, {f.Text}\n");
+            //}
+            return mergeFields;
         }
 
         public void ReadSmokeballForm()
@@ -68,6 +69,23 @@ namespace ExtractMergeFields
             {
                 Console.Write($"{f.Code}, {f.Text}\n");
             }
+        }
+
+        public void GetFilerType(IEnumerable<Spire.Doc.Fields.Field> fields)
+        {
+            List<Spire.Doc.Fields.Field> mergeFieldMap = new List<Spire.Doc.Fields.Field>();
+            foreach (Spire.Doc.Fields.Field field in fields)
+            {
+                string mergefieldName = field.Code.Substring(12, field.Code.Length - 12);
+                string value = field.Text;
+                if (mergefieldName == "BANKRUPTCY_DE__Type_of_debtor ")
+                {
+                    mergeFieldMap.Add(field);
+                    Console.WriteLine($"{{ \"{mergefieldName}\", \"{value}\" }},");
+                }
+            }
+            Console.WriteLine($"There are {mergeFieldMap.Count()} items in the list.");
+            return;
         }
     }
 }

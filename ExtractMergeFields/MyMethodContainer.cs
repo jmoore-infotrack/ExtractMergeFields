@@ -203,12 +203,12 @@ namespace ExtractMergeFields
             return ifExists;
         }
 
-        public void SaveZipFile(string openPath)
+        public void SaveZipFile(string openPath, string fileName)
         {
             // saves a document into a zip collection that exposes its XML
             using (WordprocessingDocument doc = WordprocessingDocument.Open(openPath, true))
             {
-                string savePath = $"{_basePath}/Checkbox/Petition.zip";
+                string savePath = $"{_basePath}/{fileName}.zip";
                 doc.SaveAs(savePath);
             }
         }
