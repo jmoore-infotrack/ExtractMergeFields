@@ -12,7 +12,7 @@ namespace ExtractMergeFields
 {
     public class Reader
     {
-        string _basePath;
+        readonly string _basePath;
         public Reader(string basePath)
         {
             _basePath = basePath;
@@ -120,6 +120,15 @@ namespace ExtractMergeFields
             }
             Console.WriteLine($"There are {mergeFieldMap.Count()} items in the list.");
             return;
+        }
+
+        public int GetPageCount(string filePath)
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, false))
+            {
+                // This number can be inaccurate since it is only the result of the last time Word calculated it
+                return int.Parse(doc.ExtendedFilePropertiesPart.Properties.Pages.Text);
+            }
         }
     }
 }
