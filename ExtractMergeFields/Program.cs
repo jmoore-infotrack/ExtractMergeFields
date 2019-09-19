@@ -14,9 +14,10 @@ namespace ExtractMergeFields
     class Program
     {
         private static readonly string basePath = "../../Docs/";
-        private static readonly string mainFilePath = $"{basePath}LeapBankruptcyPetition.docx";
-        private static readonly string cloneFilePath = $"{basePath}BankruptcyPetitionClone.docx";
-        private static string fileName = "LeapBankruptcyPetition";
+        private static readonly string mainLeapFilePath = $"{basePath}LeapBankruptcyPetition.docx";
+        private static readonly string cloneLeapFilePath = $"{basePath}BankruptcyPetitionClone.docx";
+        private static string leapFileName = "LeapBankruptcyPetition";
+        private static readonly string smokeballFilePath = $"{basePath}SmokeballBankruptcyPetition.docx";
         static void Main()
         {
             Reader reader = new Reader(basePath);
@@ -30,18 +31,21 @@ namespace ExtractMergeFields
             // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
 
             // reader.FindAllIfParagraphs(mainFilePath);
-            //var fields = reader.ReadLeapForm($"{basePath}{fileName}.docx");
-            //DictionaryBuilder builder = new DictionaryBuilder(fields);
-            //var values = builder.GetMergefieldDictionary();
+            // var fields = reader.ReadLeapForm($"{basePath}{fileName}.docx");
+            // DictionaryBuilder builder = new DictionaryBuilder(fields);
+            // var values = builder.GetMergefieldDictionary();
             // reader.GetFilerType(fields);
 
-            methodContainer.CleanMergefield(mainFilePath);
+            // methodContainer.RemoveHeaderIfParagraphs(mainFilePath);
+            // methodContainer.CleanMergefieldV2(mainFilePath, "DEBTOR__First_name_excl_middle", "Harold");
             // methodContainer.ExchangeTextValue(mainFilePath, "6789", "0000");
             // methodContainer.ChangeSingleMergefield(mainFilePath, "DEBTOR2__Middle_name", "Robert");
             // methodContainer.ChangeEmptyMergefield(mainFilePath, "BANKRUPTCY_DE__Case_number", "12345");
             // methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
             // methodContainer.UncheckCheckbox(mainFilePath, "Chapter 7");
             // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
+
+            reader.ReadSmokeballForm(smokeballFilePath);
 
             Console.WriteLine("The program is complete.");
             Console.ReadLine();

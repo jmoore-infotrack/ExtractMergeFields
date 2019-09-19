@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ExtractMergeFields
@@ -53,21 +54,33 @@ namespace ExtractMergeFields
             return mergeFields;
         }
 
-        public void ReadSmokeballForm()
+        public void ReadSmokeballForm(string filePath)
         {
             // Use spire to get a collection of fields in the smokeball document
             Spire.Doc.Document document = new Spire.Doc.Document();
-            document.LoadFromFile($"{_basePath}SmokeballBankruptcyPetition.docx");
+            document.LoadFromFile($"{filePath}");
 
             var merge = document.MailMerge;
             FieldCollection fields = document.Fields;
             var mergeFields = from Spire.Doc.Fields.Field f in fields
                               select f;
-            mergeFields = mergeFields.ToList();
+            mergeFields = mergeFields.Where(x => !x.Code.Contains("CHECKBOX") && !x.Code.Contains("AUTOMATIONIF") && !x.Code.Contains("AUTOMATIONELSE") && !x.Code.Contains("AUTOMATIONENDIF") && !x.Code.Contains("AUTOMATIONENDELSE")).ToList();
+
+            var cleanMergefields = new List<Spire.Doc.Fields.Field>();
 
             foreach (var f in mergeFields)
             {
-                Console.Write($"{f.Code}, {f.Text}\n");
+                if (f.FieldText != string.Empty && !cleanMergefields.Contains(f))
+                {
+                    cleanMergefields.Add(f);
+                }
+            }
+
+            foreach(var f in cleanMergefields)
+            {
+                var match = Regex.Match(f.Code, @"\\\*\\\*");
+                var mergeFieldNameStartIndex = match.Index + 4;
+                Console.Write($"{f.Code.Substring(mergeFieldNameStartIndex)}, {f.FieldText}\n");
             }
         }
 

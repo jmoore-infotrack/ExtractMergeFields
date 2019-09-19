@@ -35,38 +35,6 @@ namespace ExtractMergeFields
             }
         }
 
-        public void MailMerge(string filePath, string incorrectValue = "Harold", string correctValue = "Harry")
-        {
-            // not currently usable
-            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
-            {
-                const string FieldDelimeter = " MERGEFIELD ";
-
-                foreach (FieldCode field in doc.MainDocumentPart.RootElement.Descendants<FieldCode>())
-                {
-                    if (field.Text.Contains(FieldDelimeter.ToString()))
-                    {
-                        // var fieldNameStart = field.Text.LastIndexOf(FieldDelimeter, System.StringComparison.Ordinal);
-                        // var fieldName = field.Text.Substring(fieldNameStart + FieldDelimeter.Length).Trim();
-
-                        foreach (Run run in doc.MainDocumentPart.Document.Descendants<Run>())
-                        {
-                            foreach (Text txtFromRun in run.Descendants<Text>().Where(a => a.Text == incorrectValue))
-                            {
-                                txtFromRun.Text = correctValue;
-                            }
-                            //foreach (Text txtFromRun in run.Descendants<Text>())
-                            //{
-                            //    Console.WriteLine(txtFromRun.Text);
-                            //    Console.WriteLine(txtFromRun.InnerText);
-                            //}
-                        }
-                    }
-                }
-                doc.MainDocumentPart.Document.Save();
-            }
-        }
-
         public void ChangeSingleMergefield(string filePath, string mergefieldName = "DEBTOR__First_name_excl_middle", string correctValue = "Robert")
         {
             // Updates a merge field's value when we know the field name but not the current value
@@ -182,10 +150,8 @@ namespace ExtractMergeFields
         public void ExecuteTextChange(FieldCode field, Paragraph paragraph, string correctValue)
         {
             var runToBeChanged = paragraph.Descendants<Run>().ToList()[3];
-            Console.WriteLine("Before: " + runToBeChanged.InnerText);
             var textToBeChanged = runToBeChanged.Descendants<Text>().FirstOrDefault();
             textToBeChanged.Text = correctValue;
-            Console.WriteLine("After: " + runToBeChanged.InnerText);
         }
 
         public bool DiscoverIf(Run run)
@@ -213,7 +179,7 @@ namespace ExtractMergeFields
             }
         }
 
-        public void CleanMergefield(string filePath, string mergefieldName = "DEBTOR2__Middle_name", string correctValue = "")
+        public void CleanMergefield(string filePath, string mergefieldName = "DEBTOR2__Middle_name", string correctValue = "test")
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
             {
@@ -256,17 +222,104 @@ namespace ExtractMergeFields
                         if (run.RsidRunProperties != null && run.RsidRunAddition != null && firstTextDone != true)
                         {
                             FieldCode fieldcode = (FieldCode)run.ChildElements[1];
-                            fieldcode.Text = "value";
+                            fieldcode.Text = correctValue;
                             firstTextDone = true;
                             continue;
                         }
                         run.Remove();
                     }
-                    Run mergeFieldElement = (Run)paragraph.ChildElements[4].Clone();
-                    paragraph.InsertAt(mergeFieldElement, 1);
-                    paragraph.ChildElements[5].Remove();
+                    if (paragraph.Count() == 5)
+                    {
+                        Run mergeFieldElement = (Run)paragraph.ChildElements[4].Clone();
+                        paragraph.InsertAt(mergeFieldElement, paragraph.ChildElements.Count() - 4);
+                        paragraph.ChildElements.Last().Remove();
+                    }
                 }
-                doc.Save();
+                int seconds = new DateTime().Second;
+                doc.SaveAs(filePath.Remove(filePath.Length - 5, 5) + seconds + ".docx");
+            }
+        }
+
+        public void CleanMergefieldV2(string filePath, string mergefieldName = "DEBTOR2__Middle_name", string correctValue = "test")
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            {
+                string completeMergeFieldName = $"MERGEFIELD {mergefieldName} ";
+
+                var fieldsWithMergefieldName = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Contains(mergefieldName));
+                foreach (FieldCode field in fieldsWithMergefieldName)
+                {
+                    var paragraph = field.Ancestors<Paragraph>().FirstOrDefault();
+                    if (paragraph.Count() <= 6) continue;
+                    var firstBeginDone = false;
+                    var firstMergefieldDone = false;
+                    var firstSeparateDone = false;
+                    var firstTextDone = false;
+                    var firstEndDone = false;
+
+                    var runs = paragraph.Descendants<Run>().ToList();
+                    var tempRuns = new Run[5];
+                    foreach (Run run in runs)
+                    {
+                        if (run.Descendants<FieldChar>().Any(x => x.FieldCharType == FieldCharValues.Begin) && firstBeginDone != true)
+                        {
+                            tempRuns[0] = run;
+                            firstBeginDone = true;
+                        }
+                        else if (run.Descendants<FieldCode>().Any(x => x.Text.Contains(mergefieldName)) && firstMergefieldDone != true)
+                        {
+                            tempRuns[1] = run;
+                            firstMergefieldDone = true;
+                        }
+                        else if (run.Descendants<FieldChar>().Any(x => x.FieldCharType == FieldCharValues.Separate) && firstSeparateDone != true)
+                        {
+                            tempRuns[2] = run;
+                            firstSeparateDone = true;
+                        }
+                        else if (run.RsidRunProperties != null && run.RsidRunAddition != null && firstTextDone != true)
+                        {
+                            FieldCode fieldcode = (FieldCode)run.ChildElements[1];
+                            fieldcode.Text = correctValue;
+                            tempRuns[3] = run;
+                            firstTextDone = true;
+                        }
+                        else if (run.Descendants<FieldChar>().Any(x => x.FieldCharType == FieldCharValues.End) && firstEndDone != true)
+                        {
+                            tempRuns[4] = run;
+                            firstEndDone = true;
+                        }
+                        run.Remove();
+                    }
+                    foreach(Run run in tempRuns)
+                    {
+                        paragraph.AppendChild(run);
+                    }
+                }
+                int seconds = new DateTime().Second;
+                doc.SaveAs(filePath.Remove(filePath.Length - 5, 5) + seconds + ".docx");
+            }
+        }
+
+        public void RemoveHeaderIfParagraphs(string filePath, string mergefieldName = "DEBTOR__First_name_excl_middle")
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
+            {
+                string completeMergeFieldName = $"MERGEFIELD {mergefieldName} ";
+
+                var fieldsWithMergefieldName = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Contains(mergefieldName));
+
+                foreach (FieldCode field in fieldsWithMergefieldName)
+                {
+                    var paragraph = field.Ancestors<Paragraph>().FirstOrDefault();
+                    var previousParagraph = paragraph?.PreviousSibling();
+                    if (previousParagraph == null) continue;
+                    if (previousParagraph.Descendants<FieldCode>().Any(x => x.Text.Contains(mergefieldName)))
+                        {
+                            paragraph.PreviousSibling().Remove();
+                        }
+                }
+                int seconds = DateTime.Now.Second;
+                doc.SaveAs(filePath.Remove(filePath.Length - 5, 5) + seconds + ".docx");
             }
         }
     }
