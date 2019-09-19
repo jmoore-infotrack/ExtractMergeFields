@@ -54,7 +54,7 @@ namespace ExtractMergeFields
             return mergeFields;
         }
 
-        public void ReadSmokeballForm(string filePath)
+        public IEnumerable<Spire.Doc.Fields.Field> ReadSmokeballForm(string filePath)
         {
             // Use spire to get a collection of fields in the smokeball document
             Spire.Doc.Document document = new Spire.Doc.Document();
@@ -78,10 +78,31 @@ namespace ExtractMergeFields
 
             foreach(var f in cleanMergefields)
             {
-                var match = Regex.Match(f.Code, @"\\\*\\\*");
-                var mergeFieldNameStartIndex = match.Index + 4;
-                Console.Write($"{f.Code.Substring(mergeFieldNameStartIndex)}, {f.FieldText}\n");
+                var mergeFieldNameStartIndex = GetMatchIndex(f);
             }
+            return cleanMergefields;
+        }
+
+        public Dictionary<string, string> ConvertFieldDataToDictionary(IEnumerable<Spire.Doc.Fields.Field> fields)
+        {
+            Dictionary<string, string> fieldValuePairs = new Dictionary<string, string>();
+            foreach(var f in fields)
+            {
+                var mergeFieldNameStartIndex = GetMatchIndex(f);
+                string key = f.Code.Substring(mergeFieldNameStartIndex);
+                if (!fieldValuePairs.ContainsKey(key))
+                {
+                    string value = f.FieldText;
+                    fieldValuePairs.Add(key, value);
+                }
+            }
+            return fieldValuePairs;
+        }
+
+        private int GetMatchIndex(Spire.Doc.Fields.Field field)
+        {
+            var match = Regex.Match(field.Code, @"\\\*\\\*");
+            return match.Index + 4;
         }
 
         public void GetFilerType(IEnumerable<Spire.Doc.Fields.Field> fields)

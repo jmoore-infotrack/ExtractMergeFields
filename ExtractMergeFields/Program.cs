@@ -45,7 +45,12 @@ namespace ExtractMergeFields
             // methodContainer.UncheckCheckbox(mainFilePath, "Chapter 7");
             // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
 
-            reader.ReadSmokeballForm(smokeballFilePath);
+            var fields = reader.ReadSmokeballForm(smokeballFilePath);
+            var fieldDictionary = reader.ConvertFieldDataToDictionary(fields);
+            foreach (var k in fieldDictionary.Keys)
+            {
+                Console.WriteLine($"{k}: {fieldDictionary[k]}");
+            }
 
             Console.WriteLine("The program is complete.");
             Console.ReadLine();
