@@ -53,47 +53,10 @@ namespace ExtractMergeFields
             using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, true))
             {
                 string completeMergeFieldName = $" MERGEFIELD {mergefieldName} ";
-
                 var fieldsWithMergefieldName = doc.MainDocumentPart.RootElement.Descendants<FieldCode>().Where(x => x.Text.Equals(completeMergeFieldName));
-                Console.WriteLine($"There are {fieldsWithMergefieldName.Count()} fields with the following MergefieldName: {mergefieldName}");
-                foreach (FieldCode field in fieldsWithMergefieldName)
-                {
-                    var paragraph = field.Ancestors<Paragraph>().FirstOrDefault();
-                    Run mergefieldRunElement = (Run)field.Parent;
-                    Run precedingElement = (Run)mergefieldRunElement.PreviousSibling();
-                    if (DiscoverIf(mergefieldRunElement))
-                    {
-                        continue;
-                    }
-                    // An empty paragraph can have 3 or 4 ChildElements, depending on whether there is a properties element
-                    if(paragraph.Count() == 3 || paragraph.Count() == 4)
-                    {
-                        var clone = precedingElement.Clone();
-                        var clone2 = precedingElement.Clone();
 
-                        paragraph.InsertAt((Run)clone, paragraph.ChildElements.Count() - 1);
-                        paragraph.InsertAt((Run)clone2, paragraph.ChildElements.Count() - 1);
+                _service.InputValueInEmptyMergefield(fieldsWithMergefieldName, correctValue);
 
-                        // This changes the middle element's field type to "separate," a necessary component of the mergefield structure
-                        var runs = paragraph.Descendants<Run>().ToList();
-                        var separateRun = runs[2];
-                        var fldChar = separateRun.Descendants<FieldChar>().FirstOrDefault();
-                        fldChar.FieldCharType.Value = FieldCharValues.Separate;
-                        fldChar.FieldLock = null;
-
-                        // This updates the second to last element and inserts the desired value
-                        var runToBeChanged = runs[3];
-                        runToBeChanged.RsidRunProperties = "007F440F";
-                        runToBeChanged.RsidRunAddition = "005A020C";
-                        runToBeChanged.RemoveChild(runToBeChanged.ChildElements[1]);
-                        runToBeChanged.AppendChild(new Text(correctValue));
-                    }
-                    else
-                    {
-                        Console.WriteLine("There is already data in the fields.");
-                        continue;
-                    }
-                }
                 doc.MainDocumentPart.Document.Save();
             }
         }
@@ -139,21 +102,6 @@ namespace ExtractMergeFields
                 symbol.Char = "F072";
                 symbol.Font = "Wingdings";
             }
-        }
-
-        public bool DiscoverIf(Run run)
-        {
-            bool ifExists = false;
-            var siblings = run.Parent.ChildElements.ToList();
-            foreach (var s in siblings)
-            {
-                if (s.InnerText == " IF ")
-                {
-                    ifExists = true;
-                    break;
-                }
-            }
-            return ifExists;
         }
 
         public void SaveZipFile(string openPath, string fileName)

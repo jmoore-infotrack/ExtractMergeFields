@@ -10,5 +10,7 @@ namespace ExtractMergeFields
         void ChangeSingleMergefield(IEnumerable<FieldCode> fields, string correctValue);
 
         void ExecuteTextChange(Paragraph paragraph, string correctValue);
+
+        void InputValueInEmptyMergefield(IEnumerable<FieldCode> fields, string correctValue);
     }
 }

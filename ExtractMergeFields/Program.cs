@@ -37,15 +37,15 @@ namespace ExtractMergeFields
             //    cleaner.CleanMergefieldV2(location, fieldName);
             //}
 
-            for(int i = 0; i< fieldNames.Length; i++)
-            {
-                cleaner.RemoveHeaderIfParagraphs(location, fieldNames[i]);
-                cleaner.CleanMergefieldV2(location, fieldNames[i], personDetails[i]);
-            }
+            //for(int i = 0; i< fieldNames.Length; i++)
+            //{
+            //    cleaner.RemoveHeaderIfParagraphs(location, fieldNames[i]);
+            //    cleaner.CleanMergefieldV2(location, fieldNames[i], personDetails[i]);
+            //}
 
             // methodContainer.FixTextValue(location, "0000", "6789");
             // methodContainer.ChangeSingleMergefield(location, "DEBTOR2__Middle_name", "Robert");
-            // methodContainer.ChangeEmptyMergefield(location, "BANKRUPTCY_DE__Case_number", "12345");
+            methodContainer.ChangeEmptyMergefield(location, "BANKRUPTCY_DE__Case_number", "12345");
             // methodContainer.CheckCheckbox(location, "Chapter 7");
             // methodContainer.UncheckCheckbox(location, "Chapter 7");
             // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
