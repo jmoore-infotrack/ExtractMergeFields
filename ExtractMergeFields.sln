@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractMergeFields", "ExtractMergeFields\ExtractMergeFields.csproj", "{D983FACF-8AB7-42C9-9E68-139233453B09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractMergeFields.Tests", "ExtractMergeFields.Tests\ExtractMergeFields.Tests.csproj", "{E6A38D3E-C935-40D1-AE0F-C7A755D20EC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D983FACF-8AB7-42C9-9E68-139233453B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D983FACF-8AB7-42C9-9E68-139233453B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D983FACF-8AB7-42C9-9E68-139233453B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6A38D3E-C935-40D1-AE0F-C7A755D20EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6A38D3E-C935-40D1-AE0F-C7A755D20EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6A38D3E-C935-40D1-AE0F-C7A755D20EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6A38D3E-C935-40D1-AE0F-C7A755D20EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

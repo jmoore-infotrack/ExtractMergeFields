@@ -21,39 +21,58 @@ namespace ExtractMergeFields
         static void Main()
         {
             Reader reader = new Reader(basePath);
-            MyMethodContainer methodContainer = new MyMethodContainer(basePath);
+            LeapDocCleaner cleaner = new LeapDocCleaner(mainLeapFilePath);
+            MyMethodContainer methodContainer = new MyMethodContainer(basePath, new DocumentService());
             Person person = new Person { FirstName = "Robert", MiddleName = "Harold", LastName = "Williamson" };
             string[] fieldNames = new string[3] { "DEBTOR__First_name_excl_middle", "DEBTOR__Middle_name", "DEBTOR__People_Last_Name" };
             string[] personDetails = new string[3] { person.FirstName, person.MiddleName, person.LastName };
 
-            // ExperimentXML experiment = new ExperimentXML();
-            // experiment.WriteToWordDoc($"{basePath}ExperimentDoc.docx", "Hello world");
-            // Console.WriteLine(experiment.CreateWordDoc($"{basePath}Create{DateTime.Now.Millisecond}.zip", "Hello world!"));
+            string location = methodContainer.CopyFileToNewLocation(mainLeapFilePath);
+            //cleaner.RemoveHeaderIfParagraphs(location, "DEBTOR__First_name_excl_middle");
+            //cleaner.CleanMergefieldV2(location, "DEBTOR__First_name_excl_middle");
 
-            // reader.FindAllIfParagraphs(mainFilePath);
-            // var fields = reader.ReadLeapForm($"{basePath}{fileName}.docx");
-            // DictionaryBuilder builder = new DictionaryBuilder(fields);
-            // var values = builder.GetMergefieldDictionary();
-            // reader.GetFilerType(fields);
+            //foreach(var fieldName in fieldNames)
+            //{
+            //    cleaner.RemoveHeaderIfParagraphs(location, fieldName);
+            //    cleaner.CleanMergefieldV2(location, fieldName);
+            //}
 
-            // methodContainer.RemoveHeaderIfParagraphs(mainFilePath);
-            // methodContainer.CleanMergefieldV2(mainFilePath, "DEBTOR__First_name_excl_middle", "Harold");
-            // methodContainer.ExchangeTextValue(mainFilePath, "6789", "0000");
-            // methodContainer.ChangeSingleMergefield(mainFilePath, "DEBTOR2__Middle_name", "Robert");
-            // methodContainer.ChangeEmptyMergefield(mainFilePath, "BANKRUPTCY_DE__Case_number", "12345");
-            // methodContainer.CheckCheckbox(mainFilePath, "Chapter 7");
-            // methodContainer.UncheckCheckbox(mainFilePath, "Chapter 7");
+            for(int i = 0; i< fieldNames.Length; i++)
+            {
+                cleaner.RemoveHeaderIfParagraphs(location, fieldNames[i]);
+                cleaner.CleanMergefieldV2(location, fieldNames[i], personDetails[i]);
+            }
+
+            // methodContainer.FixTextValue(location, "0000", "6789");
+            // methodContainer.ChangeSingleMergefield(location, "DEBTOR2__Middle_name", "Robert");
+            // methodContainer.ChangeEmptyMergefield(location, "BANKRUPTCY_DE__Case_number", "12345");
+            // methodContainer.CheckCheckbox(location, "Chapter 7");
+            // methodContainer.UncheckCheckbox(location, "Chapter 7");
             // methodContainer.SaveZipFile($"{basePath}{fileName}.docx", fileName);
 
-            //var fields = reader.ReadSmokeballForm(smokeballFilePath);
-            //var fieldDictionary = reader.ConvertFieldDataToDictionary(fields);
+            // leap dictionary
+
+            //var leapFields = reader.ReadLeapForm($"{basePath}{leapFileName}.docx");
+            //DictionaryBuilder builder = new DictionaryBuilder(leapFields);
+            //var values = builder.GetMergefieldDictionary();
+
+            // smokeball dictionary
+
+            //var smokeballFields = reader.ReadSmokeballForm(smokeballFilePath);
+            //var fieldDictionary = reader.ConvertFieldDataToDictionary(smokeballFields);
             //foreach (var k in fieldDictionary.Keys)
             //{
             //    Console.WriteLine($"{k}: {fieldDictionary[k]}");
             //}
 
-            Console.WriteLine(reader.GetPageCount(mainLeapFilePath));
-            Console.WriteLine(reader.GetPageCount(smokeballFilePath));
+            // reader.GetFilerType(leapFields);
+            // reader.FindAllIfParagraphs(mainFilePath);
+
+            // Console.WriteLine(reader.GetPageCount(mainLeapFilePath));
+            // Console.WriteLine(reader.GetPageCount(smokeballFilePath));
+
+            // reader.ReadSmokeballForm(smokeballFilePath);
+            // reader.ReadLeapForm(mainLeapFilePath);
 
             Console.WriteLine("The program is complete.");
             Console.ReadLine();

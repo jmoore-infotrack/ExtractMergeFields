@@ -70,7 +70,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictionaryBuilder.cs" />
+    <Compile Include="DocumentService.cs" />
     <Compile Include="ExperimentXML.cs" />
+    <Compile Include="IDocumentService.cs" />
+    <Compile Include="LeapDocCleaner.cs" />
     <Compile Include="MapperHelper.cs" />
     <Compile Include="MyMethodContainer.cs" />
     <Compile Include="OpenXmlWordHelper.cs" />

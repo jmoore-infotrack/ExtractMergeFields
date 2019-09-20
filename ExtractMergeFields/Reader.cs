@@ -66,6 +66,13 @@ namespace ExtractMergeFields
                               select f;
             mergeFields = mergeFields.Where(x => !x.Code.Contains("CHECKBOX") && !x.Code.Contains("AUTOMATIONIF") && !x.Code.Contains("AUTOMATIONELSE") && !x.Code.Contains("AUTOMATIONENDIF") && !x.Code.Contains("AUTOMATIONENDELSE")).ToList();
 
+            // To see all mergefields in the document, uncomment the following lines
+            foreach (var f in mergeFields)
+            {
+                int matchIndex = GetMatchIndex(f);
+                Console.WriteLine($"{f.Code.Substring(matchIndex)}");
+            }
+
             var cleanMergefields = new List<Spire.Doc.Fields.Field>();
 
             foreach (var f in mergeFields)
